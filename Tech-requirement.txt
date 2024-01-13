@@ -1,0 +1,5 @@
+Requirement
+
+1. Analyze stocks.
+2. Find the stock name in the news.
+3. Anytime there is a news about the stock, send an email to the user.
