@@ -86,7 +86,7 @@ processed_text = process_text_with_regex(concatenated_news)
 
 
 
-processed_text = processed_text[:4097]
+processed_text = processed_text[:150000]
 
 
 
@@ -97,7 +97,7 @@ client = OpenAI()
 
 print("Stock Information:")
 completion = client.chat.completions.create(
-    model="gpt-3.5-turbo",  # Updated to use GPT-4
+    model="gpt-4-1106-preview",  # Updated to use GPT-4
     messages=[
         {"role": "system", "content": f"Analyze {processed_text} and make it into bullet points."}
     ]
@@ -109,6 +109,8 @@ response = str(completion.choices[0].message)
 matches = re.findall(r'"(.*?)"', response)
 print(matches)
 
+
+#print(response)
 
 '''
 ticker = "AAPL"
