@@ -103,8 +103,11 @@ def display_assistant_message(message):
                     stored_messages.append(content)
     
     with st.chat_message("assistant"):
-        st.markdown(stored_messages[-1])
-        print(len(stored_messages))
+        for message in stored_messages:
+            if isinstance(message, str):
+                st.markdown(message)
+        #st.markdown(stored_messages[-1])
+        #print(len(stored_messages))
 
 
 

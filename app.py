@@ -32,22 +32,23 @@ def main():
     msft = yahooFinance.Ticker(ticker)
 
     assistance_ID = 'asst_vSYVvJ3sGbisAl7wkpANHgwj'
-    thread = client.beta.threads.create()
 
     
     if st.sidebar.button("Fetch News"):
+        thread = client.beta.threads.create()
+
         # Clear the previous messages
         st.empty()
 
         # Fetch news from Yahoo Finance
-        yahoo_news = ""
-        yahoo_links = msft.news
-        for source in yahoo_links:
+        #yahoo_news = ""
+        #yahoo_links = msft.news
+        #for source in yahoo_links:
             #print(source['link'])
-            content = requests.get(source['link']).text
-            yahoo_news += function.extract_content(content)
+        #    content = requests.get(source['link']).text
+        #    yahoo_news += function.extract_content(content)
         
-        st.session_state.general_news = function.gpt_handler(assistance_ID, yahoo_news, thread, client, "first")
+        #st.session_state.general_news = function.gpt_handler(assistance_ID, yahoo_news, thread, client, "first")
 
         # Fetch news from Benzinga
         url = f'https://www.benzinga.com/quote/{ticker}/news'
@@ -55,6 +56,8 @@ def main():
         content = [requests.get(link).text for link in http_links]
         concatenated_news = function.concatenate_elements(content)
         processed_text = function.extract_content(concatenated_news)
+        if len(processed_text) > 32767:
+            processed_text = processed_text[:32767]
 
         # Analyze the news with IntelliQ Assistance
         st.session_state.messages = function.gpt_handler(assistance_ID, processed_text, thread, client)
@@ -67,6 +70,9 @@ def main():
         CompanyInfo = yahooFinance.Ticker(ticker)
         function.display_company_info(CompanyInfo.info)
         function.display_stock_info(CompanyInfo.info)
+
+        # Delete message and thread
+        client.beta.threads.delete(thread.id)
 
 
 
