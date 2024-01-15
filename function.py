@@ -91,30 +91,45 @@ def extract_content(text):
 
 
 def display_assistant_message(message):
+    stored_messages = []
     st.session_state.messages = message
+
     for message in reversed(st.session_state.messages):
-            if message.role in ["assistant"]:
-                with st.chat_message(message.role):
-                    for content in message.content:
-                        if content.type == "text":
-                            st.markdown(content.text.value)
-                        elif content.type == "image_file":
-                            image_file = content.image_file.file_id
-                            image_data = client.files.content(image_file)
-                            image_data = image_data.read()
-                            #save image to temp file
-                            temp_file = tempfile.NamedTemporaryFile(delete=False)
-                            temp_file.write(image_data)
-                            temp_file.close()
-                            #display image
-                            image = Image.open(temp_file.name)
-                            st.image(image)
-                        else:
-                            st.markdown(content)
+        if message.role in ["assistant"]:
+            for content in message.content:
+                if content.type == "text":
+                    stored_messages.append(content.text.value)
+                else:
+                    stored_messages.append(content)
+    
+    with st.chat_message("assistant"):
+        st.markdown(stored_messages[-1])
+
+
+
+    # for message in reversed(st.session_state.messages):
+    #         if message.role in ["assistant"]:
+    #             with st.chat_message(message.role):
+    #                 for content in message.content:
+    #                     if content.type == "text":
+    #                         st.markdown(content.text.value)
+    #                     elif content.type == "image_file":
+    #                         image_file = content.image_file.file_id
+    #                         image_data = client.files.content(image_file)
+    #                         image_data = image_data.read()
+    #                         #save image to temp file
+    #                         temp_file = tempfile.NamedTemporaryFile(delete=False)
+    #                         temp_file.write(image_data)
+    #                         temp_file.close()
+    #                         #display image
+    #                         image = Image.open(temp_file.name)
+    #                         st.image(image)
+    #                     else:
+    #                         st.markdown(content)
 
 # Chatgpt handler
-def gpt_handler(assistance_ID, processed_text, client, type="news"):
-    thread = client.beta.threads.create()
+def gpt_handler(assistance_ID, processed_text, thread, client, type="news"):
+    
     message = client.beta.threads.messages.create(
         thread_id=thread.id,
         role="user",
@@ -136,8 +151,8 @@ def gpt_handler(assistance_ID, processed_text, client, type="news"):
     pending = False
     while st.session_state.run.status != "completed":
         if not pending:
-            with st.chat_message("assistant"):
-                if type != "general":
+            if type != "first":
+                with st.chat_message("assistant"):
                     st.markdown("Processing...")
             pending = True
         time.sleep(3)

@@ -32,21 +32,22 @@ def main():
     msft = yahooFinance.Ticker(ticker)
 
     assistance_ID = 'asst_vSYVvJ3sGbisAl7wkpANHgwj'
+    thread = client.beta.threads.create()
 
-    # Fetch news from Yahoo Finance
-    yahoo_news = ""
-    yahoo_links = msft.news
-    for source in yahoo_links:
-        #print(source['link'])
-        content = requests.get(source['link']).text
-        yahoo_news += function.extract_content(content)
-    
-    st.session_state.general_news = function.gpt_handler(assistance_ID, yahoo_news, client, "general")
-    function.display_assistant_message(st.session_state.general_news)
     
     if st.sidebar.button("Fetch News"):
         # Clear the previous messages
         st.empty()
+
+        # Fetch news from Yahoo Finance
+        yahoo_news = ""
+        yahoo_links = msft.news
+        for source in yahoo_links:
+            #print(source['link'])
+            content = requests.get(source['link']).text
+            yahoo_news += function.extract_content(content)
+        
+        st.session_state.general_news = function.gpt_handler(assistance_ID, yahoo_news, thread, client, "first")
 
         # Fetch news from Benzinga
         url = f'https://www.benzinga.com/quote/{ticker}/news'
@@ -56,7 +57,7 @@ def main():
         processed_text = function.extract_content(concatenated_news)
 
         # Analyze the news with IntelliQ Assistance
-        st.session_state.messages = function.gpt_handler(assistance_ID, processed_text, client)
+        st.session_state.messages = function.gpt_handler(assistance_ID, processed_text, thread, client)
         
         # Display the assistant messages
         function.display_assistant_message(st.session_state.messages)
