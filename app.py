@@ -8,6 +8,8 @@ import function
 import time
 
 
+
+
 def init():
     if "messages" not in st.session_state:
         st.session_state.messages = []
@@ -35,7 +37,12 @@ def main():
 
     
     if st.sidebar.button("Fetch News"):
-        thread = client.beta.threads.create()
+        st.session_state.thread_id = client.beta.threads.create()
+
+        # Fetch and display stock information from Yahoo Finance
+        CompanyInfo = yahooFinance.Ticker(ticker)
+        function.display_company_info(CompanyInfo.info)
+        function.display_stock_info(CompanyInfo.info)
 
         # Clear the previous messages
         st.empty()
@@ -60,19 +67,17 @@ def main():
             processed_text = processed_text[:32767]
 
         # Analyze the news with IntelliQ Assistance
-        st.session_state.messages = function.gpt_handler(assistance_ID, processed_text, thread, client)
+        st.session_state.messages.append(function.gpt_handler(assistance_ID, processed_text, st.session_state.thread_id, client))
         
         # Display the assistant messages
-        function.display_assistant_message(st.session_state.messages)
-    
+        function.display_news_summary(st.session_state.messages)
 
-        # Fetch and display stock information from Yahoo Finance
-        CompanyInfo = yahooFinance.Ticker(ticker)
-        function.display_company_info(CompanyInfo.info)
-        function.display_stock_info(CompanyInfo.info)
+        # Create a chatting interface
 
-        # Delete message and thread
-        client.beta.threads.delete(thread.id)
+        #st.session_state.current_assistant, st.session_state.model_option, st.session_state.assistant_instructions = assistant_handler(client, assistant_option)
+        #chat_prompt(client, assistance_ID)
+        #function.display_assistant_message(st.session_state.messages)
+
 
 
 
