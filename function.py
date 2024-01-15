@@ -104,6 +104,7 @@ def display_assistant_message(message):
     
     with st.chat_message("assistant"):
         st.markdown(stored_messages[-1])
+        print(len(stored_messages))
 
 
 
