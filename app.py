@@ -42,10 +42,13 @@ def main():
         http_links = function.scrape_http_links(url)
         content = [requests.get(link).text for link in http_links]
         concatenated_news = function.concatenate_elements(content)
-        processed_text = function.process_text_with_regex(concatenated_news)
-        processed_text = processed_text[:30000]
+        #concatenated_news = concatenated_news[:32000]
+        processed_text = function.extract_content(concatenated_news)
 
-        #print(processed_text)
+        # processed_text = function.process_text_with_regex(concatenated_news)
+        # processed_text = function.clean_text(processed_text)
+        # processed_text = processed_text[:32000]
+        print(processed_text)
 
         thread = client.beta.threads.create()
         message = client.beta.threads.messages.create(
@@ -64,6 +67,7 @@ def main():
             thread_id=thread.id,
             run_id=run.id
         )
+        
         st.session_state.run = run
         pending = False
         while st.session_state.run.status != "completed":

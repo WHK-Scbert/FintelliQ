@@ -56,3 +56,33 @@ def process_text_with_regex(text):
 
     return cleaned_text
 
+def clean_text(text):
+    # Remove HTML tags
+    clean = re.sub(r'<.*?>', '', text)
+    
+    # Remove any remaining HTML/CSS elements and attributes
+    clean = re.sub(r'{.*?}', '', clean)
+    clean = re.sub(r'\[.*?\]', '', clean)
+    
+    # Replace multiple spaces, newlines, or tabs with a single space
+    clean = re.sub(r'\s+', ' ', clean)
+
+    return clean.strip()
+
+def extract_content(text):
+    # Send a request to the URL
+
+    # Check if the request was successful
+    
+    # Parse the content of the webpage
+    soup = BeautifulSoup(text, 'html.parser')
+
+    for script in soup.find_all('script'):
+        script.decompose()
+    for script in soup.find_all('span'):
+        script.decompose()
+
+    paragraphs = soup.find_all('p')
+    readable_text = '\n'.join([p.get_text() for p in paragraphs])
+
+    return readable_text
