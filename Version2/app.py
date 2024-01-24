@@ -174,7 +174,7 @@ def chat_display(client):
 
 
 def main():
-    st.title('IntelliQ: The IQ of Investment 📈')
+    st.title('FintelliQ: The IQ of Investment 📈')
     st.caption('Created by C1C Chanon Mallanoo')
     st.divider()
 
